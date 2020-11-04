@@ -1,0 +1,14 @@
+[package]
+name = "yagui"
+version = "0.0.1"
+authors = ["Shamil <shamil@shamil.ru>"]
+edition = "2018"
+license = "MIT"
+description = "Yet Another GUI library"
+keywords = ["gui"]
+categories = ["gui"]
+readme = "README.md"
+include = ["src/**/*.rs", "README.md", "LICENSE"]
+
+[dependencies]
+conrod_core = "0.71"

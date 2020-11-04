@@ -1,0 +1,8 @@
+[package]
+name = "yagui-test"
+version = "0.0.1"
+authors = ["Shamil <shamil@shamil.ru>"]
+edition = "2018"
+
+[dependencies]
+yagui = { path = "../yagui" }
