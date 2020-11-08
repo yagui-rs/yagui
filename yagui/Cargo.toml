@@ -13,7 +13,9 @@ include = ["src/**/*.rs", "README.md", "LICENSE"]
 [dependencies]
 anyhow = "1.0"
 conrod_core = "0.71"
+conrod_glium = "0.71"
+conrod_winit = "0.71"
 glium = "0.28"
 thiserror = "1.0"
 yaml-rust = "0.4"
-#winit = "0.23"
+winit = "0.23"

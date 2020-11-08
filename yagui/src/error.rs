@@ -5,4 +5,7 @@ use thiserror::Error;
 pub enum YaguiError {
     #[error("invalid YAML")]
     InvalidYaml,
+
+    #[error("missing value with key '{0}' of type '{1}' in YAML")]
+    MissingYamlValue(String, &'static str),
 }

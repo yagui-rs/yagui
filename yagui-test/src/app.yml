@@ -1,4 +1,6 @@
 Theme:
+  App:
+    color: '#FF0000FF'
   Button:
     color: blue
     label-color: white
@@ -15,18 +17,22 @@ App:
   id: app
   width: 400
   height: 640
+  title: YAGUI App
   Button:
     id: button
     label: Press Me
     top: app.top
+    halign: app.center
     margins: 10
   Text:
     id: text
     text: Just a label
     width: app.width
     top: button.bottom
+    halign: app.center
     margins: 10
   CustomButton:
     id: customButton
     top: text.bottom
+    halign: app.center
     margins: 10

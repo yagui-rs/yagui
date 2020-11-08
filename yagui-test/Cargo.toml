@@ -5,4 +5,5 @@ authors = ["Shamil <shamil@shamil.ru>"]
 edition = "2018"
 
 [dependencies]
+anyhow = "1.0"
 yagui = { path = "../yagui" }
