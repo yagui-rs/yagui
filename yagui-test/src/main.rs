@@ -1,3 +1,6 @@
+use yagui::App;
+
 fn main() {
-    println!("Hello, world!");
+    let app = App::from_yaml(include_str!("app.yml"));
+    app.unwrap().run();
 }

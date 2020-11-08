@@ -1,0 +1,32 @@
+Theme:
+  Button:
+    color: blue
+    label-color: white
+  Text:
+    color: black
+
+CustomButton:
+  Button:
+    fill: parent
+    label: I'm Custom
+    color: magenta
+
+App:
+  id: app
+  width: 400
+  height: 640
+  Button:
+    id: button
+    label: Press Me
+    top: app.top
+    margins: 10
+  Text:
+    id: text
+    text: Just a label
+    width: app.width
+    top: button.bottom
+    margins: 10
+  CustomButton:
+    id: customButton
+    top: text.bottom
+    margins: 10
