@@ -1,4 +1,4 @@
-use yaml_rust::{yaml, Yaml, YamlLoader};
+use yaml_rust::{Yaml, YamlLoader};
 
 use crate::error::{ensure, Result, YaguiError};
 
@@ -7,7 +7,11 @@ pub struct YamlHelper {
 }
 
 impl YamlHelper {
-    pub fn new(yaml: &str) -> Result<Self> {
+    pub fn new(yaml: &Yaml) -> Self {
+        YamlHelper { yaml: yaml.clone() }
+    }
+
+    pub fn from_yaml(yaml: &str) -> Result<Self> {
         let mut docs = YamlLoader::load_from_str(yaml)?;
         ensure!(!docs.is_empty(), YaguiError::InvalidYaml);
         let yaml = docs.pop().unwrap();
@@ -46,5 +50,31 @@ impl YamlHelper {
 
     pub fn value_str(&self, key: &str) -> Option<&str> {
         self.value(key).and_then(|v| v.as_str())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn value_f64() {
+        let helper = YamlHelper::new(
+            r"
+            a: 1.0
+            b: 5
+            c:
+              d: 4
+              e: -50.1
+            ",
+        )
+        .unwrap();
+
+        assert_eq!(helper.value_f64("a"), Some(1.0));
+        assert_eq!(helper.value_f64("b"), Some(5.0));
+        assert_eq!(helper.value_f64("c.d"), Some(4.0));
+        assert_eq!(helper.value_f64("c.e"), Some(-50.1));
+        assert_eq!(helper.value_f64("c.f"), None);
+        assert_eq!(helper.value_f64("g"), None);
     }
 }
