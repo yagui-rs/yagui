@@ -1,4 +1,4 @@
-use conrod_core::{image::Map, Ui, UiBuilder, widget::*};
+use conrod_core::{image::Map, widget::*, Colorable, Labelable, Positionable, Ui, UiBuilder};
 use conrod_glium::Renderer;
 use glium::glutin::{dpi::*, event::*, event_loop::*, window::*, ContextBuilder};
 use glium::{texture::Texture2d, Display, Surface};
@@ -53,7 +53,7 @@ impl App {
             display,
             mut ui,
             image_map,
-            mut renderer
+            mut renderer,
         } = self;
 
         let mut redraw = true;
@@ -63,13 +63,14 @@ impl App {
                     let primitives = ui.draw();
                     renderer.fill(&display, primitives, &image_map);
                     let mut target = display.draw();
-                    target.clear_color(0.0, 0.0, 0.0, 1.0);
+                    target.clear_color(1.0, 1.0, 1.0, 0.5);
                     renderer.draw(&display, &mut target, &image_map).unwrap();
                     target.finish().unwrap();
                 }
                 Event::MainEventsCleared => {
                     if redraw {
                         redraw = false;
+                        // TODO: Set UI here
                         display.gl_window().window().request_redraw();
                     }
                 }
@@ -87,21 +88,36 @@ impl App {
         });
     }
 
+    fn add_button(&mut self, button: &Hash) {
+        println!("add button");
+        dbg!(&button);
+        let id = self.ui.widget_id_generator().next();
+        let ui = &mut self.ui.set_widgets();
+        Button::new().label("This is a button").set(id, ui);
+    }
+
+    fn add_text(&mut self, text: &Hash) {
+        println!("add text");
+        dbg!(&text);
+        let id = self.ui.widget_id_generator().next();
+        let ui = &mut self.ui.set_widgets();
+        Text::new("Yes!")
+            .middle_of(ui.window)
+            .color(conrod_core::color::BLACK)
+            .font_size(32)
+            .set(id, ui);
+    }
+
     fn add_widgets(&mut self, widgets: &Hash) {
         for (k, v) in widgets {
             if let Yaml::String(name) = k {
-                match name.as_str() {
-                    "Button" => {
-                        println!("add button");
-                        let mut generator = self.ui.widget_id_generator();
-                        Button::new()
-                            .set(generator.next(), &mut self.ui.set_widgets());
+                if let Yaml::Hash(widget) = v {
+                    match name.as_str() {
+                        "Button" => self.add_button(widget),
+                        "Text" => self.add_text(widget),
+                        _ => (),
                     }
-                    _ => (),
                 }
-            } else {
-                dbg!(&k);
-                dbg!(&v);
             }
         }
     }
