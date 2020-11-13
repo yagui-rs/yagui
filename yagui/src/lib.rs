@@ -1,5 +1,6 @@
 mod app;
+mod config;
 mod error;
-mod yaml_helper;
+mod gui;
 
 pub use app::App;

@@ -2,20 +2,20 @@ use yaml_rust::{Yaml, YamlLoader};
 
 use crate::error::{ensure, Result, YaguiError};
 
-pub struct YamlHelper {
+pub struct Config {
     yaml: Yaml,
 }
 
-impl YamlHelper {
+impl Config {
     pub fn new(yaml: &Yaml) -> Self {
-        YamlHelper { yaml: yaml.clone() }
+        Config { yaml: yaml.clone() }
     }
 
     pub fn from_yaml(yaml: &str) -> Result<Self> {
         let mut docs = YamlLoader::load_from_str(yaml)?;
         ensure!(!docs.is_empty(), YaguiError::InvalidYaml);
         let yaml = docs.pop().unwrap();
-        Ok(YamlHelper { yaml })
+        Ok(Config { yaml })
     }
 
     pub fn required_f64(&self, key: &str) -> Result<f64> {
@@ -59,7 +59,7 @@ mod tests {
 
     #[test]
     fn value_f64() {
-        let helper = YamlHelper::new(
+        let helper = Config::from_yaml(
             r"
             a: 1.0
             b: 5

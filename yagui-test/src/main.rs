@@ -9,7 +9,10 @@ fn start_clicked(app: &mut App) {
 }
 
 fn run() -> Result<()> {
-    let app = App::from_yaml(include_str!("app.yml"))?;
+    let mut app = App::from_yaml(include_str!("app.yml"))?;
+    app.add_font(include_bytes!(
+        "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+    ))?;
     // TODO: .events(events![start_clicked])
     app.run()
 }
