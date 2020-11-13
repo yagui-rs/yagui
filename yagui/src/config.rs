@@ -18,6 +18,18 @@ impl Config {
         Ok(Config { yaml })
     }
 
+    pub fn keys(&self) -> Vec<&str> {
+        let mut result = Vec::new();
+        if let Yaml::Hash(ref h) = self.yaml {
+            for (k, _) in h {
+                if let Yaml::String(s) = k {
+                    result.push(s.as_str())
+                }
+            }
+        }
+        result
+    }
+
     pub fn required_f64(&self, key: &str) -> Result<f64> {
         self.value_f64(key)
             .ok_or_else(|| YaguiError::MissingYamlValue(key.to_string(), "f64").into())
@@ -26,6 +38,10 @@ impl Config {
     pub fn required_value(&self, key: &str) -> Result<&Yaml> {
         self.value(key)
             .ok_or_else(|| YaguiError::MissingYamlValue(key.to_string(), "object").into())
+    }
+
+    pub fn sub(&self, key: &str) -> Option<Config> {
+        self.value(key).map(Self::new)
     }
 
     pub fn value(&self, key: &str) -> Option<&Yaml> {

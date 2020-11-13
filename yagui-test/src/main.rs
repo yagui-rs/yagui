@@ -4,15 +4,12 @@ use anyhow::Result;
 use yagui::App;
 
 // TODO: #[button_clicked("start")]
-fn start_clicked(app: &mut App) {
+fn _start_clicked(_app: &mut App) {
     dbg!("start_clicked");
 }
 
 fn run() -> Result<()> {
-    let mut app = App::from_yaml(include_str!("app.yml"))?;
-    app.add_font(include_bytes!(
-        "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
-    ))?;
+    let app = App::from_yaml(include_str!("app.yml"))?;
     // TODO: .events(events![start_clicked])
     app.run()
 }
