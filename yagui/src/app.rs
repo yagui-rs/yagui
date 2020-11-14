@@ -1,9 +1,10 @@
-use conrod_core::{image::Map, text::Font, Ui, UiBuilder};
 use conrod_core::text::font::Id as FontId;
+use conrod_core::{image::Map, text::Font, Ui, UiBuilder};
 use conrod_glium::Renderer;
 use glium::glutin::{dpi::*, event::*, event_loop::*, window::*, ContextBuilder};
 use glium::{texture::Texture2d, Display, Surface};
 use std::collections::HashMap;
+use std::time::{Duration, Instant};
 
 use crate::config::Config;
 use crate::error::Result;
@@ -47,7 +48,10 @@ impl App {
         app.add_font("regular", include_bytes!("fonts/Roboto-Regular.ttf"))?;
         app.add_font("bold", include_bytes!("fonts/Roboto-Bold.ttf"))?;
         app.add_font("italic", include_bytes!("fonts/Roboto-Italic.ttf"))?;
-        app.add_font("bold_italic", include_bytes!("fonts/Roboto-BlackItalic.ttf"))?;
+        app.add_font(
+            "bold_italic",
+            include_bytes!("fonts/Roboto-BlackItalic.ttf"),
+        )?;
 
         app.ui.theme.font_id = Some(app.fonts["regular"]);
 
@@ -71,27 +75,13 @@ impl App {
             fonts,
         } = self;
 
-        let mut redraw = true;
+        let delay = Duration::from_millis(16);
+        let mut trigger = None;
+        let mut need_redraw = true;
+        let mut update_event = false;
         event_loop.run(move |event, _, control_flow| {
             match &event {
-                Event::RedrawRequested(_) => {
-                    let primitives = ui.draw();
-                    renderer.fill(&display, primitives, &image_map);
-                    let mut target = display.draw();
-                    target.clear_color(1.0, 1.0, 1.0, 1.0);
-                    renderer.draw(&display, &mut target, &image_map).unwrap();
-                    target.finish().unwrap();
-                }
-                Event::MainEventsCleared => {
-                    if redraw {
-                        redraw = false;
-
-                        let mut gui = Gui::new(&mut ui, &fonts, &config);
-                        if gui.setup() {
-                            display.gl_window().window().request_redraw();
-                        }
-                    }
-                }
+                // Close event
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                     _ => (),
@@ -101,7 +91,49 @@ impl App {
 
             if let Some(event) = convert_event(&event, &display.gl_window().window()) {
                 ui.handle_event(event);
-                redraw = true;
+                need_redraw = true;
+            }
+
+            match &event {
+                // Redraw event
+                Event::RedrawRequested(_) => {
+                    let primitives = ui.draw();
+                    renderer.fill(&display, primitives, &image_map);
+                    let mut target = display.draw();
+                    target.clear_color(1.0, 1.0, 1.0, 1.0);
+                    renderer.draw(&display, &mut target, &image_map).unwrap();
+                    target.finish().unwrap();
+                }
+                // Timeout event
+                Event::NewEvents(StartCause::Init { .. })
+                | Event::NewEvents(StartCause::ResumeTimeReached { .. }) => update_event = true,
+
+                // Idle event
+                Event::MainEventsCleared if trigger.is_none() && need_redraw => {
+                    need_redraw = false;
+                    update_event = true;
+                }
+
+                _ => (),
+            }
+
+            if update_event {
+                update_event = false;
+                let mut gui = Gui::new(&mut ui, &fonts, &config);
+                if gui.setup() {
+                    display.gl_window().window().request_redraw();
+                    trigger = Some(Instant::now() + delay);
+                } else {
+                    trigger = None;
+                }
+            }
+
+            if *control_flow != ControlFlow::Exit {
+                if let Some(trigger) = trigger {
+                    *control_flow = ControlFlow::WaitUntil(trigger);
+                } else {
+                    *control_flow = ControlFlow::Wait;
+                }
             }
         });
     }

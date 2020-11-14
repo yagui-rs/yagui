@@ -1,7 +1,6 @@
-use conrod_core::{widget::*, Colorable, Labelable, Positionable, Ui};
 use conrod_core::text::font::Id as FontId;
+use conrod_core::{widget::*, Colorable, Labelable, Positionable, Ui};
 use std::collections::HashMap;
-use yaml_rust::{yaml::Hash, Yaml};
 
 use crate::config::Config;
 
@@ -13,9 +12,18 @@ pub struct Gui<'a> {
 }
 
 impl<'a> Gui<'a> {
-    pub fn new(ui: &'a mut Ui, fonts: &'a HashMap<&'static str, FontId>, config: &'a Config) -> Self {
+    pub fn new(
+        ui: &'a mut Ui,
+        fonts: &'a HashMap<&'static str, FontId>,
+        config: &'a Config,
+    ) -> Self {
         let ids = HashMap::new();
-        Gui { ui, config, fonts, ids }
+        Gui {
+            ui,
+            config,
+            fonts,
+            ids,
+        }
     }
 
     pub fn setup(&mut self) -> bool {
