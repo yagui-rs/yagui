@@ -75,26 +75,24 @@ impl App {
             fonts,
         } = self;
 
+        let mut gui = Gui::new(config, fonts);
+
         let delay = Duration::from_millis(16);
         let mut trigger = None;
         let mut need_redraw = true;
         let mut update_event = false;
         event_loop.run(move |event, _, control_flow| {
-            match &event {
-                // Close event
-                Event::WindowEvent { event, .. } => match event {
-                    WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-                    _ => (),
-                },
-                _ => (),
-            }
-
             if let Some(event) = convert_event(&event, &display.gl_window().window()) {
                 ui.handle_event(event);
                 need_redraw = true;
             }
 
             match &event {
+                // Close event
+                Event::WindowEvent { event, .. } => match event {
+                    WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
+                    _ => (),
+                },
                 // Redraw event
                 Event::RedrawRequested(_) => {
                     let primitives = ui.draw();
@@ -119,10 +117,9 @@ impl App {
 
             if update_event {
                 update_event = false;
-                let mut gui = Gui::new(&mut ui, &fonts, &config);
-                if gui.setup() {
-                    display.gl_window().window().request_redraw();
+                if gui.update(&mut ui) {
                     trigger = Some(Instant::now() + delay);
+                    display.gl_window().window().request_redraw();
                 } else {
                     trigger = None;
                 }
