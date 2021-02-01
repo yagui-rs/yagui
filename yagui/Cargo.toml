@@ -9,14 +9,14 @@ description = "Yet Another GUI library"
 keywords = ["gui"]
 categories = ["gui"]
 readme = "README.md"
-include = ["src/**/*.rs", "README.md", "LICENSE"]
+include = ["src/**/*.rs", "src/**/*.ttf", "README.md", "LICENSE"]
 
 [dependencies]
 anyhow = "1.0"
 conrod_core = "0.71"
 conrod_glium = "0.71"
 conrod_winit = "0.71"
-glium = "0.29"
+glium = "0.28"
 thiserror = "1.0"
 yaml-rust = "0.4"
-winit = "0.24"
+winit = "0.23"
